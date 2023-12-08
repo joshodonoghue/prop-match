@@ -1,5 +1,6 @@
 import React from 'react';
 import './About.css'; // Importing a separate CSS file for About component
+import { Link } from 'react-router-dom';
 
 function About() {
     return (
@@ -21,6 +22,15 @@ function About() {
                 <h3>Customer Attraction Strategies</h3>
                 <p>To attract and retain our valued customers, we offer first-time user benefits, a rewarding referral program, and actively engage with the community through workshops and events.</p>
             </div>
+            <div className="buttons-container">
+                <Link to="/signup" style={{ textDecoration: 'none' }}>
+                    <button className="big-button">Sign Up</button>
+                </Link>
+                <Link to="/login" style={{ textDecoration: 'none' }}>
+                    <button className="big-button">Log In</button>
+                </Link>
+            </div>
+        
         </section>
     );
 }

@@ -27,3 +27,21 @@ footer {
   text-align: center;
   padding: 10px 0;
 }
+.big-button {
+  background-color: #28a745; /* A shade of green */
+  color: white;
+  border: none;
+  border-radius: 20px; /* Rounded corners */
+  padding: 10px 30px; /* Adjust padding for a longer rectangle */
+  font-size: 16px;
+  cursor: pointer;
+  text-align: center;
+  margin: 0 auto; /* Center the button */
+  display: block; /* Block display for auto margins to work */
+  text-decoration: none; /* Removes underline */
+}
+
+.big-button:hover {
+  background-color: #218838; /* Darker shade of green for hover effect */
+  text-decoration: none;
+}

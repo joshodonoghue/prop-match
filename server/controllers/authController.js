@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const { validationResult } = require('express-validator');
-const User = require('../models/User');
+const { connection } = require('../utils/db'); // Ensure this path is correct
 
 exports.register = async (req, res) => {
     // Check for validation errors
@@ -10,38 +10,39 @@ exports.register = async (req, res) => {
     }
 
     try {
-        const { firstName, lastName, email, username, password } = req.body;
+        const { first_name, last_name, email, username, password } = req.body;
+
+        // Log and check the received password
+        console.log("Received password:", password);
+        if (!password) {
+            return res.status(400).json({ message: "Password is required" });
+        }
 
         // Check if email or username already exists
-        const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-        if (existingUser) {
-            return res.status(400).json({ message: 'Email or username already in use' });
-        }
+        connection.query('SELECT * FROM users WHERE email = ? OR username = ?', [email, username], async (err, results) => {
+            if (err) {
+                return res.status(500).json({ message: err.message });
+            }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+            if (results.length > 0) {
+                return res.status(400).json({ message: 'Email or username already in use' });
+            }
 
-        // Create new user
-        const newUser = new User({
-            firstName,
-            lastName,
-            email,
-            username,
-            passwordHash: hashedPassword,
+            // Hash password
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Create new user
+            const query = 'INSERT INTO users (first_name, last_name, email, username, password_hash) VALUES (?, ?, ?, ?, ?)';
+            connection.query(query, [first_name, last_name, email, username, hashedPassword], (err, results) => {
+                if (err) {
+                    return res.status(500).json({ message: err.message });
+                }
+                res.status(201).json({ message: 'User registered successfully' });
+            });
         });
 
-        // Save new user
-        await newUser.save();
-        res.status(201).json({ message: 'User registered successfully' });
-
     } catch (error) {
-        // Enhanced error handling
-        if (error.code === 11000) {
-            // Duplicate key error (this might happen if unique index constraint is violated in MongoDB)
-            res.status(400).json({ message: 'Email or username already exists' });
-        } else {
-            // General error handling
-            res.status(500).json({ message: error.message });
-        }
+        // General error handling
+        res.status(500).json({ message: error.message });
     }
 };

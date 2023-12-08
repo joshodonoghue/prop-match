@@ -47,50 +47,99 @@ function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = validate(formData);
+        const newErrors = validate(formData); // Assuming you have a validate function for form data
+    
         if (Object.keys(newErrors).length === 0) {
             try {
-                const response = await fetch('http://localhost:5000/api/auth/register', {
+                const response = await fetch('http://localhost:3001/api/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(formData),
                 });
-
+    
                 if (!response.ok) {
-                    throw new Error('Failed to register');
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
+    
                 const result = await response.json();
-                console.log(result);
-                // Handle success (e.g., redirect or show a success message)
+                console.log(result); // You can handle the response here
+                // Maybe redirect to login page or show success message
             } catch (error) {
                 console.error('Registration error:', error);
-                // Handle errors (e.g., show error message)
+                // Handle errors in registration (show error message to the user)
             }
         } else {
-            setErrors(newErrors);
+            setErrors(newErrors); // Handle form validation errors
         }
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <input type="text" name="firstName" placeholder="First Name" onChange={handleChange} />
-            {errors.firstName && <p>{errors.firstName}</p>}
-            <input type="text" name="lastName" placeholder="Last Name" onChange={handleChange} />
-            {errors.lastName && <p>{errors.lastName}</p>}
-            <input type="email" name="email" placeholder="Email" onChange={handleChange} />
-            {errors.email && <p>{errors.email}</p>}
-            <input type="text" name="username" placeholder="Username" onChange={handleChange} />
-            {errors.username && <p>{errors.username}</p>}
-            <input type="password" name="password" placeholder="Password" onChange={handleChange} />
-            {errors.password && <p>{errors.password}</p>}
-            <input type="password" name="confirmPassword" placeholder="Confirm Password" onChange={handleChange} />
-            {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
-            <button type="submit">Sign Up</button>
-        </form>
+        <div className="signup-container">
+            <form onSubmit={handleSubmit} className="signup-form">
+                <table>
+                    <tbody>
+                        {/* First Name Field */}
+                        <tr>
+                            <td><label htmlFor="firstName">First Name:</label></td>
+                            <td>
+                                <input type="text" name="firstName" id="firstName" placeholder="First Name" onChange={handleChange} />
+                                {errors.firstName && <p>{errors.firstName}</p>}
+                            </td>
+                        </tr>
+                        {/* Last Name Field */}
+                        <tr>
+                            <td><label htmlFor="lastName">Last Name:</label></td>
+                            <td>
+                                <input type="text" name="lastName" id="lastName" placeholder="Last Name" onChange={handleChange} />
+                                {errors.lastName && <p>{errors.lastName}</p>}
+                            </td>
+                        </tr>
+                        {/* Email Field */}
+                        <tr>
+                            <td><label htmlFor="email">Email:</label></td>
+                            <td>
+                                <input type="email" name="email" id="email" placeholder="Email" onChange={handleChange} />
+                                {errors.email && <p>{errors.email}</p>}
+                            </td>
+                        </tr>
+                        {/* Username Field */}
+                        <tr>
+                            <td><label htmlFor="username">Username:</label></td>
+                            <td>
+                                <input type="text" name="username" id="username" placeholder="Username" onChange={handleChange} />
+                                {errors.username && <p>{errors.username}</p>}
+                            </td>
+                        </tr>
+                        {/* Password Field */}
+                        <tr>
+                            <td><label htmlFor="password">Password:</label></td>
+                            <td>
+                                <input type="password" name="password" id="password" placeholder="Password" onChange={handleChange} />
+                                {errors.password && <p>{errors.password}</p>}
+                            </td>
+                        </tr>
+                        {/* Confirm Password Field */}
+                        <tr>
+                            <td><label htmlFor="confirmPassword">Confirm Password:</label></td>
+                            <td>
+                                <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" onChange={handleChange} />
+                                {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
+                            </td>
+                        </tr>
+                        {/* Submit Button */}
+                        <tr>
+                            <td colSpan="2">
+                                <button type="submit" className="submit-button">Sign Up</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
     );
 }
+
 
 export default Signup;
