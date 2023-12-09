@@ -1,8 +1,9 @@
-// In src/components/Login.js
 import React, { useState } from 'react';
-import './Login.css'; // Create and style similarly to Signup.css
+import './Login.css'; // Make sure this CSS file is styled
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+    const navigate = useNavigate();
     const [loginData, setLoginData] = useState({
         username: '',
         password: ''
@@ -15,8 +16,38 @@ function Login() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        // Implement login logic here
-        // This will involve making an HTTP request to your backend
+        setError(''); // Reset error message
+
+        // Basic validation
+        if (!loginData.username || !loginData.password) {
+            setError('Username and password are required');
+            return;
+        }
+
+        try {
+            const response = await fetch('http://localhost:3001/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                navigate('/logged-in'); // Redirect to the "Logged In" page
+            } else {
+                throw new Error(data.message || 'Login failed');
+            }
+
+            console.log('Login successful:', data);
+            // Handle successful login:
+            // - Save the user data or token (if provided) for session management
+            // - Redirect the user or update the app state to reflect the login
+        } catch (error) {
+            console.error('Login error:', error);
+            setError(error.message);
+        }
     };
 
     return (

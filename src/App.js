@@ -5,6 +5,7 @@ import Header from './Header';
 import About from './About';
 import Signup from './Signup'; // Make sure this component is imported
 import Login from './Login';
+import LoggedInPage from './LoggedInPage';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                     <Route path="/" element={<About />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/login" element={<Login />} />
+                    <Route path="/logged-in" element={<LoggedInPage />} />
                     {/* Define other routes here */}
                 </Routes>
 

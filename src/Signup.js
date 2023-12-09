@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import './Signup.css'; // Assuming you have a corresponding CSS file
+import './Signup.css'; // Ensure this CSS file is created and linked
+import { useNavigate } from 'react-router-dom';
 
 function Signup() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
+        first_name: '',
+        last_name: '',
         email: '',
         username: '',
         password: '',
@@ -19,10 +21,13 @@ function Signup() {
     const validate = (values) => {
         let errors = {};
 
-        if (!values.firstName.trim()) {
-            errors.firstName = 'First name is required';
+        if (!values.first_name.trim()) {
+            errors.first_name = 'First name is required';
         }
-        // Repeat similar checks for lastName, email, and username
+
+        if (!values.last_name.trim()) {
+            errors.last_name = 'Last name is required';
+        }
 
         if (!values.email) {
             errors.email = 'Email is required';
@@ -47,28 +52,39 @@ function Signup() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = validate(formData); // Assuming you have a validate function for form data
+        const newErrors = validate(formData);
     
         if (Object.keys(newErrors).length === 0) {
+
             try {
                 const response = await fetch('http://localhost:3001/api/auth/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify({
+                        first_name: formData.first_name,
+                        last_name: formData.last_name,
+                        email: formData.email,
+                        username: formData.username,
+                        password: formData.password // Assuming backend expects 'password'
+                    }),
                 });
+                console.log(response)
     
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                if (response.ok) {
+                    // Redirect to the login page
+                    navigate('/login');
+                } else {
+                    // Handle unsuccessful registration
+                    const errorData = await response.json();
+                    console.error('Registration error:', errorData);
+                    // ... handle and display error message
                 }
-    
-                const result = await response.json();
-                console.log(result); // You can handle the response here
                 // Maybe redirect to login page or show success message
             } catch (error) {
                 console.error('Registration error:', error);
-                // Handle errors in registration (show error message to the user)
+                // Handle errors in registration
             }
         } else {
             setErrors(newErrors); // Handle form validation errors
@@ -78,68 +94,28 @@ function Signup() {
     return (
         <div className="signup-container">
             <form onSubmit={handleSubmit} className="signup-form">
-                <table>
-                    <tbody>
-                        {/* First Name Field */}
-                        <tr>
-                            <td><label htmlFor="firstName">First Name:</label></td>
-                            <td>
-                                <input type="text" name="firstName" id="firstName" placeholder="First Name" onChange={handleChange} />
-                                {errors.firstName && <p>{errors.firstName}</p>}
-                            </td>
-                        </tr>
-                        {/* Last Name Field */}
-                        <tr>
-                            <td><label htmlFor="lastName">Last Name:</label></td>
-                            <td>
-                                <input type="text" name="lastName" id="lastName" placeholder="Last Name" onChange={handleChange} />
-                                {errors.lastName && <p>{errors.lastName}</p>}
-                            </td>
-                        </tr>
-                        {/* Email Field */}
-                        <tr>
-                            <td><label htmlFor="email">Email:</label></td>
-                            <td>
-                                <input type="email" name="email" id="email" placeholder="Email" onChange={handleChange} />
-                                {errors.email && <p>{errors.email}</p>}
-                            </td>
-                        </tr>
-                        {/* Username Field */}
-                        <tr>
-                            <td><label htmlFor="username">Username:</label></td>
-                            <td>
-                                <input type="text" name="username" id="username" placeholder="Username" onChange={handleChange} />
-                                {errors.username && <p>{errors.username}</p>}
-                            </td>
-                        </tr>
-                        {/* Password Field */}
-                        <tr>
-                            <td><label htmlFor="password">Password:</label></td>
-                            <td>
-                                <input type="password" name="password" id="password" placeholder="Password" onChange={handleChange} />
-                                {errors.password && <p>{errors.password}</p>}
-                            </td>
-                        </tr>
-                        {/* Confirm Password Field */}
-                        <tr>
-                            <td><label htmlFor="confirmPassword">Confirm Password:</label></td>
-                            <td>
-                                <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" onChange={handleChange} />
-                                {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
-                            </td>
-                        </tr>
-                        {/* Submit Button */}
-                        <tr>
-                            <td colSpan="2">
-                                <button type="submit" className="submit-button">Sign Up</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <input type="text" name="first_name" id="firstName" placeholder="First Name" onChange={handleChange} />
+                {errors.first_name && <p>{errors.first_name}</p>}
+                
+                <input type="text" name="last_name" id="lastName" placeholder="Last Name" onChange={handleChange} />
+                {errors.last_name && <p>{errors.last_name}</p>}
+                
+                <input type="email" name="email" id="email" placeholder="Email" onChange={handleChange} />
+                {errors.email && <p>{errors.email}</p>}
+                
+                <input type="text" name="username" id="username" placeholder="Username" onChange={handleChange} />
+                {errors.username && <p>{errors.username}</p>}
+                
+                <input type="password" name="password" id="password" placeholder="Password" onChange={handleChange} />
+                {errors.password && <p>{errors.password}</p>}
+                
+                <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" onChange={handleChange} />
+                {errors.confirmPassword && <p>{errors.confirmPassword}</p>}
+                
+                <button type="submit" className="submit-button">Sign Up</button>
             </form>
         </div>
     );
 }
-
 
 export default Signup;
