@@ -37,6 +37,48 @@ app.get('/api/dashboard', async (req, res) => {
         res.status(500).json({ message: 'Error retrieving data' });
     }
 });
+app.get('/api/user-count', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT COUNT(*) AS count FROM users');
+        res.json({ count: rows[0].count });
+    } catch (error) {
+        console.error('Error fetching user count:', error);
+        res.status(500).json({ message: 'Error retrieving user count' });
+    }
+});
+app.get('/api/msct', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT COUNT(*) AS count FROM messages');
+        res.json({ count: rows[0].count });
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ message: 'Error retrieving messages' });
+    }
+});
+ app.get('/api/unfilled', async (req, res) => {
+        try {
+            const [rows] = await pool.query('SELECT COUNT(*) AS count FROM inprogress');
+            res.json({ count: rows[0].count });
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+            res.status(500).json({ message: 'Error retrieving messages' });
+        }
+});
+
+
+app.get('/api/top', async (req, res) => {
+    try {
+        const [rows] = await pool.query('SELECT username FROM users ORDER BY RAND() LIMIT 6;');
+        res.json(rows); // Send the rows as they are
+    } catch (error) {
+        console.error('Error fetching top users:', error);
+        res.status(500).json({ message: 'Error retrieving top users' });
+    }
+});
+
+
+
+
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
